@@ -7,8 +7,8 @@ class SignUpForm(forms.Form):
     last_name = forms.CharField(max_length=150)
     password = forms.CharField(max_length=150, widget=forms.PasswordInput)
     password_confirmation = forms.CharField(max_length=150, widget=forms.PasswordInput)
-    is_tenant = forms.BooleanField()
-    is_employee = forms.BooleanField()
+    # is_tenant = forms.BooleanField()
+    # is_employee = forms.BooleanField()
 
 
 class LoginForm(forms.Form):
