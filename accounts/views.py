@@ -31,6 +31,8 @@ def signup(request):
                     first_name=first_name,
                     last_name=last_name,
                 )
+                user.profile.user_type = 'non_tenant'
+                user.profile.save()
                 user = authenticate(request, username=email, password=password)
                 if user is not None:
                     login(request, user)
