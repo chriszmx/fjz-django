@@ -30,6 +30,7 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
+    "RentalApp.apps.RentalappConfig",
     "accounts.apps.AccountsConfig",
     "django.contrib.admin",
     "django.contrib.auth",
