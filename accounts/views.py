@@ -20,8 +20,9 @@ def signup(request):
 
             if User.objects.filter(email=email).exists():
                 return JsonResponse(
-                    {"message": "User with this email already exists."}, status=400
+                    {"email": "User with this email already exists."}, status=400
                 )
+
 
             if password == password_confirmation:
                 user = User.objects.create_user(
@@ -44,7 +45,8 @@ def signup(request):
     else:
         form = SignUpForm()
 
-    return JsonResponse({"message": "Invalid form data."}, status=400)
+    errors = form.errors.get_json_data(escape_html=True)
+    return JsonResponse(errors, status=400)
 
 
 def user_login(request):
