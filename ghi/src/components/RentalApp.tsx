@@ -2,11 +2,281 @@ import React, { useState } from 'react';
 
 const RentalApplicationForm = () => {
 	const [step, setStep] = useState(1);
-	const [formData, setFormData] = useState({});
+	const [formData, setFormData] = useState({
+		occupants: [
+			{
+				name: '',
+				relationship: '',
+				occupation: '',
+				age: '',
+			},
+		],
+		number_of_pets: 1,
+		pets: [
+			{
+				name: '',
+				pet_type: '',
+				indoor_outdoor: '',
+				age: '',
+			},
+		],
+		number_of_vehicles: 1,
+		vehicles: [
+			{
+				vehicle_year: '',
+				vehicle_make: '',
+				vehicle_model: '',
+				vehicle_plate_number: '',
+				vehicle_plate_state: '',
+			},
+		],
+	});
 
 	const handleChange = (event) => {
 		const { name, value } = event.target;
-		setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+		if (
+			name === 'number_of_occupants' ||
+			name === 'number_of_pets' ||
+			name === 'number_of_vehicles'
+		) {
+			const numValue = Math.max(parseInt(value), 0);
+
+			setFormData((prevData) => {
+				const updatedData = {
+					...prevData,
+					[name]: numValue,
+				};
+
+				if (name === 'number_of_occupants') {
+					while (updatedData.occupants.length < numValue) {
+						updatedData.occupants.push({
+							name: '',
+							relationship: '',
+							occupation: '',
+							age: '',
+						});
+					}
+					updatedData.occupants = updatedData.occupants.slice(0, numValue);
+				} else if (name === 'number_of_pets') {
+					while (updatedData.pets.length < numValue) {
+						updatedData.pets.push({
+							name: '',
+							pet_type: '',
+							indoor_outdoor: '',
+							age: '',
+						});
+					}
+					updatedData.pets = updatedData.pets.slice(0, numValue);
+				} else if (name === 'number_of_vehicles') {
+					while (updatedData.vehicles.length < numValue) {
+						updatedData.vehicles.push({
+							vehicle_year: '',
+							vehicle_make: '',
+							vehicle_model: '',
+							vehicle_plate_number: '',
+							vehicle_plate_state: '',
+						});
+					}
+					updatedData.vehicles = updatedData.vehicles.slice(0, numValue);
+				}
+
+				return updatedData;
+			});
+		} else {
+			const regex = /^(occupants|pets|vehicles)\[(\d+)\]\.(\w+)$/;
+			const match = name.match(regex);
+
+			if (match) {
+				const [, group, index, field] = match;
+				setFormData((prevData) => ({
+					...prevData,
+					[group]: prevData[group].map((item, idx) =>
+						idx === parseInt(index) ? { ...item, [field]: value } : item
+					),
+				}));
+			} else {
+				setFormData((prevData) => ({
+					...prevData,
+					[name]: value,
+				}));
+			}
+		}
+	};
+
+	const renderOccupants = () => {
+		return formData.occupants.map((occupant, index) => (
+			<div key={index} className="space-y-4">
+				<label>{`Occupant ${index + 1} Name`}</label>
+				<input
+					type="text"
+					name={`occupants[${index}].name`}
+					value={occupant.name || ''}
+					onChange={handleChange}
+					className="border border-gray-300 rounded px-3 py-2 w-full"
+				/>
+				<label>{`Occupant ${index + 1} Relationship`}</label>
+				<select
+					name={`occupants[${index}].relationship`}
+					value={occupant.relationship || ''}
+					onChange={handleChange}
+					className="border border-gray-300 rounded px-3 py-2 w-full"
+				>
+					<option value="">-- Select --</option>
+					<option value="spouse">Spouse</option>
+					<option value="child">Child</option>
+					<option value="parent">Parent</option>
+					<option value="sibling">Sibling</option>
+					<option value="self">Self</option>
+					<option value="other">Other</option>
+				</select>
+				<label>{`Occupant ${index + 1} Occupation`}</label>
+				<select
+					name={`occupants[${index}].occupation`}
+					value={occupant.occupation || ''}
+					onChange={handleChange}
+					className="border border-gray-300 rounded px-3 py-2 w-full"
+				>
+					<option value="">-- Select --</option>
+					<option value="employed">Employed</option>
+					<option value="unemployed">Unemployed</option>
+					<option value="student">Student</option>
+					<option value="retired">Retired</option>
+				</select>
+				<label>{`Occupant ${index + 1} Age`}</label>
+				<select
+					name={`occupants[${index}].age`}
+					value={occupant.age || ''}
+					onChange={handleChange}
+					className="border border-gray-300 rounded px-3 py-2 w-full"
+				>
+					<option value="">-- Select --</option>
+					<option value="under18">Under 18</option>
+					<option value="18-25">18 to 25</option>
+					<option value="26-35">26 to 35</option>
+					<option value="36-45">36 to 45</option>
+					<option value="46-55">46 to 55</option>
+					<option value="56-65">56 to 65</option>
+					<option value="over65">Over 65</option>
+				</select>
+			</div>
+		));
+	};
+
+	const renderPets = () => {
+		return formData.pets.map((pet, index) => (
+			<div key={index} className="space-y-4">
+				<label>{`Pet ${index + 1} Name`}</label>
+				<input
+					type="text"
+					name={`pets[${index}].name`}
+					value={pet.name || ''}
+					onChange={handleChange}
+					className="border border-gray-300 rounded px-3 py-2 w-full"
+				/>
+				<label>{`Pet ${index + 1} Type`}</label>
+				<select
+					name={`pets[${index}].pet_type`}
+					value={pet.pet_type || ''}
+					onChange={handleChange}
+					className="border border-gray-300 rounded px-3 py-2 w-full text-lg"
+				>
+					<option value="">Select a type</option>
+					<option value="Small Dog">Small Dog (under 10 LBS) 🐶</option>
+					<option value="Md Dog">Medium Dog (Over 10 Under 35 LBS) 🐕</option>
+					<option value="Lg Dog">Large Dog (Over 35 LBS) 🐕‍🦺</option>
+					<option value="Pit bull">Pit Bull🐩</option>
+					<option value="Cat">Cat 🐈</option>
+					<option value="Bird">Bird 🦜</option>
+					<option value="Fish">Fish 🐠</option>
+					<option value="Rabbit">Rabbit 🐇</option>
+					<option value="Hamster">Hamster 🐹</option>
+					<option value="Guinea Pig">Guinea Pig 🐷</option>
+					<option value="Turtle">Turtle 🐢</option>
+					<option value="Snake">Snake 🐍</option>
+					<option value="Lizard">Lizard 🦎</option>
+					<option value="Horse">Horse 🐴</option>
+					<option value="Goat">Goat 🐐</option>
+					<option value="Reptile">Reptile 🦕</option>
+					<option value="Duck">Duck 🦆</option>
+					<option value="Amphibian">Amphibian 🐸</option>
+					<option value="Insect">Insect 🐞</option>
+					<option value="Rodent">Rodent 🐁</option>
+					<option value="other">Other 🦖🦁</option>
+
+					{/* options */}
+				</select>
+				<label>{`Pet ${index + 1} Indoor/Outdoor`}</label>
+				<select
+					name={`pets[${index}].indoor_outdoor`}
+					value={pet.indoor_outdoor || ''}
+					onChange={handleChange}
+					className="border border-gray-300 rounded px-3 py-2 w-full text-lg"
+				>
+					<option value="">Select</option>
+					<option value="Indoor">Indoor</option>
+					<option value="Outdoor">Outdoor</option>
+					<option value="both">Indoor/Outdoor</option>
+
+					{/* options */}
+				</select>
+				<label>{`Pet ${index + 1} Age`}</label>
+				<input
+					type="text"
+					name={`pets[${index}].age`}
+					value={pet.age || ''}
+					onChange={handleChange}
+					className="border border-gray-300 rounded px-3 py-2 w-full"
+				/>
+			</div>
+		));
+	};
+
+	const renderVehicles = () => {
+		return formData.vehicles.map((vehicle, index) => (
+			<div key={index} className="space-y-4">
+				<label>{`Vehicle ${index + 1} Year`}</label>
+				<input
+					type="number"
+					name={`vehicles[${index}].vehicle_year`}
+					value={vehicle.vehicle_year || ''}
+					onChange={handleChange}
+					className="border border-gray-300 rounded px-3 py-2 w-full"
+				/>
+				<label>{`Vehicle ${index + 1} Make`}</label>
+				<input
+					type="text"
+					name={`vehicles[${index}].vehicle_make`}
+					value={vehicle.vehicle_make || ''}
+					onChange={handleChange}
+					className="border border-gray-300 rounded px-3 py-2 w-full"
+				/>
+				<label>{`Vehicle ${index + 1} Model`}</label>
+				<input
+					type="text"
+					name={`vehicles[${index}].vehicle_model`}
+					value={vehicle.vehicle_model || ''}
+					onChange={handleChange}
+					className="border border-gray-300 rounded px-3 py-2 w-full"
+				/>
+				<label>{`Vehicle ${index + 1} Plate Number`}</label>
+				<input
+					type="text"
+					name={`vehicles[${index}].vehicle_plate_number`}
+					value={vehicle.vehicle_plate_number || ''}
+					onChange={handleChange}
+					className="border border-gray-300 rounded px-3 py-2 w-full"
+				/>
+				<label>{`Vehicle ${index + 1} Plate State`}</label>
+				<input
+					type="text"
+					name={`vehicles[${index}].vehicle_plate_state`}
+					value={vehicle.vehicle_plate_state || ''}
+					onChange={handleChange}
+					className="border border-gray-300 rounded px-3 py-2 w-full"
+				/>
+			</div>
+		));
 	};
 
 	const handleNextStep = () => {
@@ -19,10 +289,10 @@ const RentalApplicationForm = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const url = 'http://localhost:8000/api/rent/rentalapp';
+		const url = 'http://localhost:8000/api/rent/rental_applications';
 		const config = {
 			method: 'post',
-			body: JSON.stringify(formData),
+			body: JSON.stringify(formData), // Your current form data is already structured correctly
 			headers: {
 				'Content-Type': 'application/json',
 			},
@@ -218,58 +488,7 @@ const RentalApplicationForm = () => {
 						onChange={handleChange}
 						className="border border-gray-300 rounded px-3 py-2 w-full"
 					/>
-					<label>Occupant 1 Name</label>
-					<input
-						type="text"
-						name="occupant_1_name"
-						value={formData.occupant_1_name || ''}
-						onChange={handleChange}
-						className="border border-gray-300 rounded px-3 py-2 w-full"
-					/>
-					<label>Occupant 1 Relationship</label>
-					<select
-						name="occupant_1_relationship"
-						value={formData.occupant_1_relationship || ''}
-						onChange={handleChange}
-						className="border border-gray-300 rounded px-3 py-2 w-full"
-					>
-						<option value="">-- Select --</option>
-						<option value="spouse">Spouse</option>
-						<option value="child">Child</option>
-						<option value="parent">Parent</option>
-						<option value="sibling">Sibling</option>
-						<option value="self">Self</option>
-						<option value="other">Other</option>
-					</select>
-					<label>Occupant 1 Occupation</label>
-					<select
-						name="occupant_1_occupation"
-						value={formData.occupant_1_occupation || ''}
-						onChange={handleChange}
-						className="border border-gray-300 rounded px-3 py-2 w-full"
-					>
-						<option value="">-- Select --</option>
-						<option value="employed">Employed</option>
-						<option value="unemployed">Unemployed</option>
-						<option value="student">Student</option>
-						<option value="retired">Retired</option>
-					</select>
-					<label>Occupant 1 Age</label>
-					<select
-						name="occupant_1_age"
-						value={formData.occupant_1_age || ''}
-						onChange={handleChange}
-						className="border border-gray-300 rounded px-3 py-2 w-full"
-					>
-						<option value="">-- Select --</option>
-						<option value="under18">Under 18</option>
-						<option value="18-25">18 to 25</option>
-						<option value="26-35">26 to 35</option>
-						<option value="36-45">36 to 45</option>
-						<option value="46-55">46 to 55</option>
-						<option value="56-65">56 to 65</option>
-						<option value="over65">Over 65</option>
-					</select>
+					{renderOccupants()}
 
 					<div className="mt-4 flex gap-4 justify-center">
 						<button
@@ -291,94 +510,19 @@ const RentalApplicationForm = () => {
 			)}
 
 			{/*page TREE*/}
-			{/* must add button for extra pets */}
 			{step === 3 && (
 				<div className="space-y-4">
 					<label className="block text-lg text-gray-700">Number of Pets</label>
-					<select
+					<input
+						type="number"
 						name="number_of_pets"
 						value={formData.number_of_pets || ''}
 						onChange={handleChange}
-						className="border border-gray-300 rounded px-3 py-2 w-full text-lg"
-					>
-						<option value="">-- Select --</option>
-						<option value="0">0</option>
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
-						<option value="4">4</option>
-						<option value="5+">5+</option>
-					</select>
-					{formData.number_of_pets && formData.number_of_pets !== '0' && (
-						<div className="space-y-4">
-							<label className="block text-lg text-gray-700">Pet Name</label>
-							<input
-								type="text"
-								name="pet_name"
-								value={formData.pet_name || ''}
-								onChange={handleChange}
-								className="border border-gray-300 rounded px-3 py-2 w-full text-lg"
-							/>
-							<label className="block text-lg text-gray-700">Pet Type</label>
-							<select
-								name="pet_type"
-								value={formData.pet_type || ''}
-								onChange={handleChange}
-								className="border border-gray-300 rounded px-3 py-2 w-full text-lg"
-							>
-								<option value="">Select a type</option>
-								<option value="Small Dog">Small Dog (under 10 LBS) 🐶</option>
-								<option value="Md Dog">
-									Medium Dog (Over 10 Under 35 LBS) 🐕
-								</option>
-								<option value="Lg Dog">Large Dog (Over 35 LBS) 🐕‍🦺</option>
-								<option value="Pit bull">Pit Bull🐩</option>
-								<option value="Cat">Cat 🐈</option>
-								<option value="Bird">Bird 🦜</option>
-								<option value="Fish">Fish 🐠</option>
-								<option value="Rabbit">Rabbit 🐇</option>
-								<option value="Hamster">Hamster 🐹</option>
-								<option value="Guinea Pig">Guinea Pig 🐷</option>
-								<option value="Turtle">Turtle 🐢</option>
-								<option value="Snake">Snake 🐍</option>
-								<option value="Lizard">Lizard 🦎</option>
-								<option value="Horse">Horse 🐴</option>
-								<option value="Goat">Goat 🐐</option>
-								<option value="Reptile">Reptile 🦕</option>
-								<option value="Duck">Duck 🦆</option>
-								<option value="Amphibian">Amphibian 🐸</option>
-								<option value="Insect">Insect 🐞</option>
-								<option value="Rodent">Rodent 🐁</option>
-								<option value="other">Other 🦖🦁</option>
+						className="border border-gray-300 rounded px-3 py-2 w-full"
+					/>
+					{renderPets()}
 
-								{/* options */}
-							</select>
-							<label className="block text-lg text-gray-700">
-								Indoor/Outdoor
-							</label>
-							<select
-								name="pet_indoor_outdoor"
-								value={formData.pet_indoor_outdoor || ''}
-								onChange={handleChange}
-								className="border border-gray-300 rounded px-3 py-2 w-full text-lg"
-							>
-								<option value="">Select</option>
-								<option value="Indoor">Indoor</option>
-								<option value="Outdoor">Outdoor</option>
-								<option value="both">Indoor/Outdoor</option>
-
-								{/* options */}
-							</select>
-							<label className="block text-lg text-gray-700">Pet Age</label>
-							<input
-								type="number"
-								name="pet_age"
-								value={formData.pet_age || ''}
-								onChange={handleChange}
-								className="border border-gray-300 rounded px-3 py-2 w-full text-lg"
-							/>
-						</div>
-					)}
+					<div className="space-y-4"></div>
 					<button
 						className="px-4 py-2 mt-4 text-gray-700 border border-gray-300 bg-white rounded shadow hover:border-gray-400 transition-colors duration-200 ease-in-out"
 						type="button"
@@ -402,73 +546,14 @@ const RentalApplicationForm = () => {
 					<label className="block text-lg text-gray-700">
 						Number of Vehicles
 					</label>
-					<select
+					<input
+						type="number"
 						name="number_of_vehicles"
 						value={formData.number_of_vehicles || ''}
 						onChange={handleChange}
 						className="border border-gray-300 rounded px-3 py-2 w-full text-lg"
-					>
-						<option value="">-- Select --</option>
-						<option value="0">0</option>
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3+">3 or more</option>
-					</select>
-					{formData.number_of_vehicles &&
-						formData.number_of_vehicles !== '0' && (
-							<div className="space-y-4">
-								<label className="block text-lg text-gray-700">
-									Vehicle Year
-								</label>
-								<input
-									type="text"
-									name="vehicle_year"
-									value={formData.vehicle_year || ''}
-									onChange={handleChange}
-									className="border border-gray-300 rounded px-3 py-2 w-full text-lg"
-								/>
-								<label className="block text-lg text-gray-700">
-									Vehicle Make
-								</label>
-								<input
-									type="text"
-									name="vehicle_make"
-									value={formData.vehicle_make || ''}
-									onChange={handleChange}
-									className="border border-gray-300 rounded px-3 py-2 w-full text-lg"
-								/>
-								<label className="block text-lg text-gray-700">
-									Vehicle Model
-								</label>
-								<input
-									type="text"
-									name="vehicle_model"
-									value={formData.vehicle_model || ''}
-									onChange={handleChange}
-									className="border border-gray-300 rounded px-3 py-2 w-full text-lg"
-								/>
-								<label className="block text-lg text-gray-700">
-									Vehicle Plate Number
-								</label>
-								<input
-									type="text"
-									name="vehicle_plate_number"
-									value={formData.vehicle_plate_number || ''}
-									onChange={handleChange}
-									className="border border-gray-300 rounded px-3 py-2 w-full text-lg"
-								/>
-								<label className="block text-lg text-gray-700">
-									Vehicle Plate State
-								</label>
-								<input
-									type="text"
-									name="vehicle_plate_state"
-									value={formData.vehicle_plate_state || ''}
-									onChange={handleChange}
-									className="border border-gray-300 rounded px-3 py-2 w-full text-lg"
-								/>
-							</div>
-						)}
+					/>
+					{renderVehicles()}
 					<div className="mt-4 flex gap-4 justify-center">
 						<button
 							className="px-4 py-2 text-gray-700 border border-gray-300 bg-white rounded shadow hover:border-gray-400 transition-colors duration-200 ease-in-out"

@@ -31,7 +31,7 @@ class RentalApplicationForm(forms.Form):
     number_of_pets = forms.ChoiceField(label="Number of Pets", choices=[("0", "0"), ("1", "1"), ("2", "2"), ("3", "3"), ("4", "4"), ("5+", "5+")], required=False)
     pet_name = forms.CharField(label="Pet Name", required=False)
     pet_type = forms.ChoiceField(label="Pet Type", choices=[("small_dog", "Small Dog (under 10 LBS)"), ("medium_dog", "Medium Dog (Over 10 Under 35 LBS)"), ("large_dog", "Large Dog (Over 35 LBS)"), ("pit_bull", "Pit Bull"), ("Cat", "Cat"), ("bird", "Bird"), ("fish", "Fish"), ("rabbit", "Rabbit"), ("hamster", "Hamster"), ("guinea_pig", "Guinea Pig"), ("turtle", "Turtle"), ("snake", "Snake"), ("lizard", "Lizard"), ("horse", "Horse"), ("goat", "Goat"), ("reptile", "Reptile"), ("duck", "Duck"), ("amphibian", "Amphibian"), ("insect", "Insect"), ("rodent", "Rodent"), ("other", "Other")], required=False)
-    pet_indoor_outdoor = forms.ChoiceField(label="Pet Indoor/Outdoor", choices=[("indoor", "Indoor"), ("outdoor", "Outdoor"), ("indoor_outdoor", "Indoor/Outdoor")], required=False)
+    pet_indoor_outdoor = forms.ChoiceField(label="Pet Indoor/Outdoor", choices=[("Indoor", "Indoor"), ("Outdoor", "Outdoor"), ("Indoor_Outdoor", "Indoor/Outdoor")], required=False)
     pet_age = forms.IntegerField(label="Pet Age", required=False)
 
     # Page 4
